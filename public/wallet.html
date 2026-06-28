@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Goldmark Wallet - Transfer Money</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            margin-top: 30px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #333;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .navbar-top {
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .balance-display {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .row-custom {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 20px;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .form-control, .form-select {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-weight: bold;
+            width: 100%;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+            margin-top: 15px;
+        }
+
+        .user-id-display {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .history-table {
+            margin-top: 30px;
+        }
+
+        .history-table h3 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            border-bottom: 2px solid #e0e0e0;
+            color: #333;
+            font-weight: bold;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .amount-sent {
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .amount-received {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .badge-status {
+            background: #28a745;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85em;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .row-custom {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .container {
+                padding: 20px;
+            }
+        }
+
+        .no-data {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>💰 Goldmark Wallet</h1>
+            <p>Transfer money between accounts instantly</p>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+            <strong>ℹ️ How it works:</strong> Create two accounts, then transfer money between them. All data is saved locally in your browser!
+        </div>
+
+        <!-- Navbar with Balance -->
+        <div class="navbar-top">
+            <span>Your Balance:</span>
+            <span class="balance-display" id="balanceDisplay">$1000</span>
+        </div>
+
+        <!-- Main Content -->
+        <div class="row-custom">
+            <!-- Create Account -->
+            <div class="card">
+                <div class="card-header">
+                    🆕 Create Account
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Email Address</strong></label>
+                        <input type="email" class="form-control" id="emailInput" placeholder="your@email.com" required>
+                    </div>
+                    <button class="btn btn-primary" onclick="createAccount()">Create Account</button>
+                    <div id="createMessage"></div>
+                </div>
+            </div>
+
+            <!-- Transfer Money -->
+            <div class="card">
+                <div class="card-header">
+                    💸 Transfer Money
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Your User ID</strong></label>
+                        <input type="number" class="form-control" id="senderIdInput" placeholder="Enter your ID" onchange="updateBalance()">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Receiver User ID</strong></label>
+                        <input type="number" class="form-control" id="receiverIdInput" placeholder="Recipient's ID">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"><strong>Amount ($)</strong></label>
+                        <input type="number" class="form-control" id="amountInput" placeholder="0.00" step="0.01" min="0">
+                    </div>
+                    <button class="btn btn-primary" onclick="transferMoney()">Send Transfer</button>
+                    <div id="transferMessage"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="history-table">
+            <h3>📋 Transaction History</h3>
+            <div id="historyContainer">
+                <div class="no-data">Enter your User ID above to view transaction history</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data from localStorage
+        function initializeData() {
+            if (!localStorage.getItem('walletUsers')) {
+                localStorage.setItem('walletUsers', JSON.stringify({}));
+                localStorage.setItem('walletTransactions', JSON.stringify([]));
+            }
+        }
+
+        // Create new account
+        function createAccount() {
+            const email = document.getElementById('emailInput').value.trim();
+            const messageDiv = document.getElementById('createMessage');
+
+            if (!email) {
+                showMessage(messageDiv, '❌ Please enter an email', 'danger');
+                return;
+            }
+
+            if (!email.includes('@')) {
+                showMessage(messageDiv, '❌ Please enter a valid email', 'danger');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('walletUsers'));
+
+            // Check if email already exists
+            if (Object.values(users).some(u => u.email === email)) {
+                showMessage(messageDiv, '❌ Email already exists', 'danger');
+                return;
+            }
+
+            // Create new user
+            const userId = Math.max(0, ...Object.keys(users).map(Number)) + 1;
+            users[userId] = {
+                id: userId,
+                email: email,
+                balance: 1000,
+                createdAt: new Date().toLocaleString()
+            };
+
+            localStorage.setItem('walletUsers', JSON.stringify(users));
+
+            showMessage(messageDiv, `✅ Account created! Your ID: <strong>${userId}</strong>`, 'success');
+            document.getElementById('emailInput').value = '';
+            document.getElementById('senderIdInput').value = userId;
+            updateBalance();
+        }
+
+        // Transfer money
+        function transferMoney() {
+            const senderId = parseInt(document.getElementById('senderIdInput').value);
+            const receiverId = parseInt(document.getElementById('receiverIdInput').value);
+            const amount = parseFloat(document.getElementById('amountInput').value);
+            const messageDiv = document.getElementById('transferMessage');
+
+            // Validation
+            if (!senderId || !receiverId || !amount) {
+                showMessage(messageDiv, '⚠️ Please fill all fields', 'danger');
+                return;
+            }
+
+            if (amount <= 0) {
+                showMessage(messageDiv, '⚠️ Amount must be greater than 0', 'danger');
+                return;
+            }
+
+            if (senderId === receiverId) {
+                showMessage(messageDiv, '❌ Cannot transfer to yourself', 'danger');
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('walletUsers'));
+
+            if (!users[senderId]) {
+                showMessage(messageDiv, '❌ Sender ID not found', 'danger');
+                return;
+            }
+
+            if (!users[receiverId]) {
+                showMessage(messageDiv, '❌ Receiver ID not found', 'danger');
+                return;
+            }
+
+            if (users[senderId].balance < amount) {
+                showMessage(messageDiv, '❌ Insufficient funds', 'danger');
+                return;
+            }
+
+            // Perform transfer
+            users[senderId].balance -= amount;
+            users[receiverId].balance += amount;
+
+            // Record transaction
+            const transactions = JSON.parse(localStorage.getItem('walletTransactions'));
+            transactions.push({
+                id: transactions.length + 1,
+                senderId: senderId,
+                receiverId: receiverId,
+                amount: amount,
+                status: 'success',
+                date: new Date().toLocaleString()
+            });
+
+            localStorage.setItem('walletUsers', JSON.stringify(users));
+            localStorage.setItem('walletTransactions', JSON.stringify(transactions));
+
+            showMessage(messageDiv, `✅ Transfer successful! $${amount.toFixed(2)} sent`, 'success');
+            document.getElementById('amountInput').value = '';
+            updateBalance();
+            loadTransactionHistory();
+        }
+
+        // Update balance display
+        function updateBalance() {
+            const senderId = parseInt(document.getElementById('senderIdInput').value);
+
+            if (!senderId) {
+                document.getElementById('balanceDisplay').textContent = '$0.00';
+                document.getElementById('historyContainer').innerHTML = '<div class="no-data">Enter your User ID above to view transaction history</div>';
+                return;
+            }
+
+            const users = JSON.parse(localStorage.getItem('walletUsers'));
+
+            if (users[senderId]) {
+                document.getElementById('balanceDisplay').textContent = `$${users[senderId].balance.toFixed(2)}`;
+                loadTransactionHistory();
+            } else {
+                document.getElementById('balanceDisplay').textContent = '$0.00';
+                showMessage(document.getElementById('transferMessage'), '❌ User ID not found', 'danger');
+            }
+        }
+
+        // Load transaction history
+        function loadTransactionHistory() {
+            const senderId = parseInt(document.getElementById('senderIdInput').value);
+            const historyContainer = document.getElementById('historyContainer');
+
+            if (!senderId) {
+                historyContainer.innerHTML = '<div class="no-data">Enter your User ID above to view transaction history</div>';
+                return;
+            }
+
+            const transactions = JSON.parse(localStorage.getItem('walletTransactions'));
+            const userTransactions = transactions.filter(tx => tx.senderId === senderId || tx.receiverId === senderId);
+
+            if (userTransactions.length === 0) {
+                historyContainer.innerHTML = '<div class="no-data">No transactions yet</div>';
+                return;
+            }
+
+            let html = '<table><thead><tr><th>Type</th><th>ID</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead><tbody>';
+
+            userTransactions.reverse().forEach(tx => {
+                const isOutgoing = tx.senderId === senderId;
+                const type = isOutgoing ? '📤 Sent to' : '📥 Received from';
+                const otherId = isOutgoing ? tx.receiverId : tx.senderId;
+                const amountClass = isOutgoing ? 'amount-sent' : 'amount-received';
+                const amountSign = isOutgoing ? '-' : '+';
+
+                html += `<tr>
+                    <td>${type}</td>
+                    <td>#${otherId}</td>
+                    <td class="${amountClass}">${amountSign}$${tx.amount.toFixed(2)}</td>
+                    <td>${tx.date}</td>
+                    <td><span class="badge-status">${tx.status}</span></td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            historyContainer.innerHTML = html;
+        }
+
+        // Show message helper
+        function showMessage(element, message, type) {
+            element.innerHTML = `<div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>`;
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initializeData();
+        });
+    </script>
+</body>
+</html>
